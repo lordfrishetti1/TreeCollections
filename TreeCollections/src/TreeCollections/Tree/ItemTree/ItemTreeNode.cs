@@ -1,37 +1,38 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using TreeCollections.InternalUtilities;
 
-namespace TreeCollections
+namespace TreeCollections.Tree.ItemTree;
+
+/// <summary>
+/// Abstract tree node that refines TreeNode by including a payload item
+/// </summary>
+/// <typeparam name="TNode"></typeparam>
+/// <typeparam name="TItem"></typeparam>
+public abstract partial class ItemTreeNode<TNode, TItem> : TreeNode<TNode>, IItemTreeNode<TItem>
+    where TNode : ItemTreeNode<TNode, TItem>
 {
-    /// <summary>
-    /// Abstract tree node that refines TreeNode by including a payload item
-    /// </summary>
-    /// <typeparam name="TNode"></typeparam>
-    /// <typeparam name="TItem"></typeparam>
-    public abstract partial class ItemTreeNode<TNode, TItem> : TreeNode<TNode>, IItemTreeNode<TItem>
-        where TNode : ItemTreeNode<TNode, TItem>
-    {
-        private bool _isBuilt;
+    private bool _isBuilt;
         
-        protected ItemTreeNode(TItem item, TNode parent)
-            : base(parent, new List<TNode>())
-        {
+    protected ItemTreeNode(TItem item, TNode parent)
+        : base(parent, new List<TNode>())
+    {
             Item = item;
         }
         
-        public TItem Item { get; }
+    public TItem Item { get; }
 
-        /// <summary>
-        /// Abstract factory method for generating a descendant
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="parent"></param>
-        /// <returns></returns>
-        protected abstract TNode Create(TItem item, TNode parent);
+    /// <summary>
+    /// Abstract factory method for generating a descendant
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="parent"></param>
+    /// <returns></returns>
+    protected abstract TNode Create(TItem item, TNode parent);
         
-        internal void Build(IReadOnlyList<TItem> childItems)
-        {
+    internal void Build(IReadOnlyList<TItem> childItems)
+    {
             if (!IsReadOnly)
             {
                 InnerBuild(childItems);
@@ -47,8 +48,8 @@ namespace TreeCollections
             InnerBuild(childItems);
         }
 
-        private void InnerBuild(IReadOnlyCollection<TItem> childItems)
-        {
+    private void InnerBuild(IReadOnlyCollection<TItem> childItems)
+    {
             if (childItems.Count == 0 || !OnAddCanProceed())
             {
                 return;
@@ -66,6 +67,4 @@ namespace TreeCollections
 
             newNodes.ForEach(n => n.OnNodeAttached());
         }
-    }
 }
-

@@ -3,24 +3,24 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TreeCollections
-{
-    /// <summary>
-    /// Enumerator for pre-order traversal with a filtering predicate and optional max depth of traversal.
-    /// The filtering predicate will terminate traversing a branch if no children satisfy the predicate, even if deeper descendants do.
-    /// </summary>
-    /// <typeparam name="TNode"></typeparam>
-    public class PreOrderFilteringEnumerator<TNode> : IEnumerator<TNode>
-        where TNode : TreeNode<TNode>
-    {
-        private readonly TNode _rootOfIteration;
-        private readonly int _maxLevel;
-        private readonly Func<TNode, bool> _allowNext; 
+namespace TreeCollections.Tree.Enumeration;
 
-        internal PreOrderFilteringEnumerator(TNode rootOfIteration, 
-                                             Func<TNode, bool> allowNext, 
-                                             int? maxRelativeDepth = null)
-        {
+/// <summary>
+/// Enumerator for pre-order traversal with a filtering predicate and optional max depth of traversal.
+/// The filtering predicate will terminate traversing a branch if no children satisfy the predicate, even if deeper descendants do.
+/// </summary>
+/// <typeparam name="TNode"></typeparam>
+public class PreOrderFilteringEnumerator<TNode> : IEnumerator<TNode>
+    where TNode : TreeNode<TNode>
+{
+    private readonly TNode _rootOfIteration;
+    private readonly int _maxLevel;
+    private readonly Func<TNode, bool> _allowNext; 
+
+    internal PreOrderFilteringEnumerator(TNode rootOfIteration, 
+        Func<TNode, bool> allowNext, 
+        int? maxRelativeDepth = null)
+    {
             _rootOfIteration = rootOfIteration;
             _maxLevel = rootOfIteration.Level + maxRelativeDepth ?? int.MaxValue;
             _allowNext = allowNext;
@@ -28,8 +28,8 @@ namespace TreeCollections
             Current = null;
         } 
         
-        public bool MoveNext()
-        {
+    public bool MoveNext()
+    {
             if (Current == null)
             {
                 Current = _rootOfIteration;
@@ -69,16 +69,15 @@ namespace TreeCollections
             return true;
         }
 
-        public TNode Current { get; private set; }
+    public TNode Current { get; private set; }
 
-        object IEnumerator.Current => Current;
+    object IEnumerator.Current => Current;
 
-        public void Dispose()
-        { }
+    public void Dispose()
+    { }
 
-        public void Reset()
-        {
+    public void Reset()
+    {
             Current = null;
         }
-    }
 }

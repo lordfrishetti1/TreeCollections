@@ -1,14 +1,13 @@
-﻿namespace TreeCollections.DemoConsole.Demos
+﻿namespace TreeCollections.DemoConsole.Demos;
+
+public class ContentItem
 {
-    public class ContentItem
+    public ContentItem(long contentId, string name)
     {
-        public ContentItem(long contentId, string name)
-        {
             ContentId = contentId;
             Name = name;
         }
 
-        public long ContentId { get; }
-        public string Name { get; }
-    }
+    public long ContentId { get; }
+    public string Name { get; }
 }

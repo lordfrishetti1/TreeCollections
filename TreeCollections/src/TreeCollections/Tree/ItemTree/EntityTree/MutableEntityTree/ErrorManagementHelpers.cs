@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TreeCollections.InternalUtilities;
 
-namespace TreeCollections
+namespace TreeCollections.Tree.ItemTree.EntityTree.MutableEntityTree;
+
+// ReSharper disable once UnusedTypeParameter
+public abstract partial class MutableEntityTreeNode<TNode, TId, TItem>
 {
-    // ReSharper disable once UnusedTypeParameter
-    public abstract partial class MutableEntityTreeNode<TNode, TId, TItem>
+    private void SetErrorsAfterAddingThis()
     {
-        private void SetErrorsAfterAddingThis()
-        {
             SetSiblingErrors();
 
             if (CheckOptions.HasFlag(ErrorCheckOptions.CyclicIdDuplicates))
@@ -21,8 +22,8 @@ namespace TreeCollections
             }
         }
 
-        private void SetErrorsAfterMovingThis()
-        {
+    private void SetErrorsAfterMovingThis()
+    {
             SetSiblingErrors();
 
             if (CheckOptions.HasFlag(ErrorCheckOptions.CyclicIdDuplicates))
@@ -36,8 +37,8 @@ namespace TreeCollections
             }
         }
 
-        private void SetSiblingErrors()
-        {
+    private void SetSiblingErrors()
+    {
             TNode[] siblings = null;
 
             if (CheckOptions.HasFlag(ErrorCheckOptions.SiblingIdDuplicates))
@@ -66,13 +67,13 @@ namespace TreeCollections
             }
         }
 
-        private void SetCyclicIdErrorsForEach()
-        {
+    private void SetCyclicIdErrorsForEach()
+    {
             this.ForEach(n => n.SetCyclicIdErrors());
         }
 
-        private void SetCyclicIdErrors()
-        {
+    private void SetCyclicIdErrors()
+    {
             var existingMatch = 
                 SelectAncestorsUpward()
                 .FirstOrDefault(HasSameIdentityAs);
@@ -83,15 +84,15 @@ namespace TreeCollections
             existingMatch.Error |= IdentityError.CyclicIdDuplicate;
         }
 
-        private void SetTreeScopeIdErrorsForEach()
-        {
+    private void SetTreeScopeIdErrorsForEach()
+    {
             // TODO: could optimize
 
             this.ForEach(n => n.SetTreeScopeIdErrors());
         }
 
-        private void SetTreeScopeIdErrors()
-        {
+    private void SetTreeScopeIdErrors()
+    {
             if (!TreeIdMap.Contains(Id))
             {
                 TreeIdMap.Add(Id);
@@ -103,8 +104,8 @@ namespace TreeCollections
             duplicates.ForEach(dup => dup.Error |= IdentityError.TreeScopeIdDuplicate);
         }
 
-        private void UpdateErrorsBeforeDetachingThis()
-        {
+    private void UpdateErrorsBeforeDetachingThis()
+    {
             if (CheckOptions.HasFlag(ErrorCheckOptions.CyclicIdDuplicates))
             {
                 UpdateCyclicIdErrorsBeforeDetachingThis();
@@ -128,8 +129,8 @@ namespace TreeCollections
             }            
         }
 
-        private void UpdateCyclicIdErrorsBeforeDetachingThis()
-        {
+    private void UpdateCyclicIdErrorsBeforeDetachingThis()
+    {
             var nodesWithCycles = SelectDescendants().Where(n => n.Error.HasFlag(IdentityError.CyclicIdDuplicate));
 
             foreach (var node in nodesWithCycles)
@@ -153,8 +154,8 @@ namespace TreeCollections
             }
         }
 
-        private void UpdateSiblingIdErrorsBeforeDetachingThis()
-        {
+    private void UpdateSiblingIdErrorsBeforeDetachingThis()
+    {
             Error &= ~IdentityError.SiblingIdDuplicate;
 
             var siblingDuplicates = SelectSiblings().Where(HasSameIdentityAs).ToArray();
@@ -165,8 +166,8 @@ namespace TreeCollections
             }
         }
 
-        private void UpdateSiblingAliasErrorsBeforeDetachingThis()
-        {
+    private void UpdateSiblingAliasErrorsBeforeDetachingThis()
+    {
             Error &= ~IdentityError.SiblingAliasDuplicate;
 
             var siblingDuplicates = SelectSiblings().Where(HasSameAliasAs).ToArray();
@@ -177,8 +178,8 @@ namespace TreeCollections
             }
         }
 
-        private void UpdateTreeScopeIdErrorsBeforeDetachingThis()
-        {
+    private void UpdateTreeScopeIdErrorsBeforeDetachingThis()
+    {
             var treeIdGroups = Root.ToLookup(n => n.Id);
 
             foreach (var grp in treeIdGroups)
@@ -212,5 +213,4 @@ namespace TreeCollections
             TreeIdMap = new HashSet<TId>(Definition.IdEqualityComparer);
             this.Select(n => n.Id).ForEach(id => TreeIdMap.Add(id));
         }
-    }
 }

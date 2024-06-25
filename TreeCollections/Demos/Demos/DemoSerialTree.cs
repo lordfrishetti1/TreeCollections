@@ -2,16 +2,19 @@
 using System.Diagnostics;
 using System.IO;
 using Newtonsoft.Json;
+using TreeCollections.Tree.ItemTree;
+using TreeCollections.Tree.ItemTree.EntityTree;
+using TreeCollections.Tree.Serialization;
 
-namespace TreeCollections.DemoConsole.Demos
+namespace TreeCollections.DemoConsole.Demos;
+
+public static class DemoSerialTree
 {
-    public static class DemoSerialTree
-    {
-        private const string OutputFolderName = @"c:\TreeCollectionDemos";
-        private const string FileName = "DemoSerialTree.json";
+    private const string OutputFolderName = @"c:\TreeCollectionDemos";
+    private const string FileName = "DemoSerialTree.json";
         
-        public static void Start()
-        {
+    public static void Start()
+    {
             InitializeOutputFolder();
 
             var dataRoot = GetRoot();
@@ -43,18 +46,18 @@ namespace TreeCollections.DemoConsole.Demos
             Display(dataRoot);
         }
 
-        private static void Display(CategoryDataNode root)
-        {
+    private static void Display(CategoryDataNode root)
+    {
             Debug.WriteLine("\n" + root.ToString(n => $"{n.CategoryId} {n.Name}") + "\n");
         }
 
-        private static void Display(SimpleMutableCategoryNode root)
-        {
-            Debug.WriteLine("\n" + root.ToString(n => $"{n.Id} {n.Item.Name} [{n.HierarchyId.ToString(".")}] {(n.Error != IdentityError.None ? n.Error.Normalize().ToString() : string.Empty)}") + "\n");
+    private static void Display(SimpleMutableCategoryNode root)
+    {
+            Debug.WriteLine("\n" + root.ToString(n => $"{n.Id} {n.Item.Name} [{n.HierarchyId.ToString(".")}] {(n.Error != IdentityError.None ? IdentityErrorExtensions.Normalize(n.Error).ToString() : string.Empty)}") + "\n");
         }
 
-        private static CategoryDataNode GetRoot()
-        {
+    private static CategoryDataNode GetRoot()
+    {
             var root =
                 new CategoryDataNode(1, "Root", 
                     new CategoryDataNode(2, "Nouns", 
@@ -84,12 +87,11 @@ namespace TreeCollections.DemoConsole.Demos
             return root;
         }
 
-        private static void InitializeOutputFolder()
-        {
+    private static void InitializeOutputFolder()
+    {
             if (!Directory.Exists(OutputFolderName))
             {
                 Directory.CreateDirectory(OutputFolderName);
             }
         }
-    }
 }

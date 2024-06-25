@@ -2,28 +2,28 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace TreeCollections
-{
-    /// <summary>
-    /// Enumerator for pre-order traversal with optional max depth of traversal
-    /// </summary>
-    /// <typeparam name="TNode"></typeparam>
-    public class PreOrderEnumerator<TNode> : IEnumerator<TNode>
-        where TNode : TreeNode<TNode>
-    {
-        private readonly TNode _rootOfIteration;
-        private readonly int _maxLevel;
+namespace TreeCollections.Tree.Enumeration;
 
-        internal PreOrderEnumerator(TNode rootOfIteration, int? maxRelativeDepth = null)
-        {
+/// <summary>
+/// Enumerator for pre-order traversal with optional max depth of traversal
+/// </summary>
+/// <typeparam name="TNode"></typeparam>
+public class PreOrderEnumerator<TNode> : IEnumerator<TNode>
+    where TNode : TreeNode<TNode>
+{
+    private readonly TNode _rootOfIteration;
+    private readonly int _maxLevel;
+
+    internal PreOrderEnumerator(TNode rootOfIteration, int? maxRelativeDepth = null)
+    {
             _rootOfIteration = rootOfIteration;
             _maxLevel = rootOfIteration.Level + maxRelativeDepth ?? int.MaxValue;
             
             Current = null;
         } 
         
-        public bool MoveNext()
-        {
+    public bool MoveNext()
+    {
             if (Current == null)
             {
                 Current = _rootOfIteration;
@@ -62,16 +62,15 @@ namespace TreeCollections
             return true;
         }
 
-        public TNode Current { get; private set; }
+    public TNode Current { get; private set; }
 
-        object IEnumerator.Current => Current;
+    object IEnumerator.Current => Current;
 
-        public void Dispose()
-        { }
+    public void Dispose()
+    { }
 
-        public void Reset()
-        {
+    public void Reset()
+    {
             Current = null;
         }
-    }
 }

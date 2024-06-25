@@ -1,12 +1,14 @@
 ﻿using System.Collections.Generic;
+using TreeCollections.Tree.ItemTree.EntityTree;
+using TreeCollections.Tree.Serialization;
 using static System.Diagnostics.Debug;
 
-namespace TreeCollections.DemoConsole.Demos
+namespace TreeCollections.DemoConsole.Demos;
+
+public static class DemoSpecialCaseMoveOperation
 {
-    public static class DemoSpecialCaseMoveOperation
+    public static void Start()
     {
-        public static void Start()
-        {
             var root = new CategoryTreeLookup("Source1").GetSimpleMutableCategoryTree();
             Display(root);
 
@@ -24,19 +26,18 @@ namespace TreeCollections.DemoConsole.Demos
             Display(root);
         }
 
-        private static void Display(IEnumerable<SimpleMutableCategoryNode> root)
-        {
+    private static void Display(IEnumerable<SimpleMutableCategoryNode> root)
+    {
             WriteLine("\n" + root.ToString(ToString));
         }
 
-        private static string ToString<TNode, TValue>(EntityTreeNode<TNode, long, TValue> n)
-            where TNode : EntityTreeNode<TNode, long, TValue>
-            where TValue : CategoryItem
-        {
+    private static string ToString<TNode, TValue>(EntityTreeNode<TNode, long, TValue> n)
+        where TNode : EntityTreeNode<TNode, long, TValue>
+        where TValue : CategoryItem
+    {
             var error = n.Error.Normalize();
 
             var errorStr = error != IdentityError.None ? $"[** {error} **]" : "";
             return $"{n.Id} {n.Item.Name} [{n.HierarchyId.ToString("/")}] {errorStr}";
         }
-    }
 }

@@ -1,14 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using TreeCollections.Tree.ItemTree.EntityTree;
+using TreeCollections.Tree.Serialization;
 using static System.Diagnostics.Debug;
 
-namespace TreeCollections.DemoConsole.Demos
+namespace TreeCollections.DemoConsole.Demos;
+
+public static class DemoReadOnlyTree
 {
-    public static class DemoReadOnlyTree
+    public static void Start()
     {
-        public static void Start()
-        {
             var root = new CategoryTreeLookup("Source2").GetReadOnlyCategoryTree();
 
             var sw = new Stopwatch();
@@ -18,8 +20,8 @@ namespace TreeCollections.DemoConsole.Demos
             Console.WriteLine($"\n*** Post data-loaded elapsed time: {sw.Elapsed} ***");
         }
 
-        private static void Start(ReadOnlyCategoryNode root)
-        {
+    private static void Start(ReadOnlyCategoryNode root)
+    {
             Display(root);
 
             var copied = new ReadOnlyCategoryNode(root.Item);
@@ -31,20 +33,20 @@ namespace TreeCollections.DemoConsole.Demos
             Display(mapCopied);
         }
 
-        private static void Display(IEnumerable<ReadOnlyCategoryNode> root)
-        {
+    private static void Display(IEnumerable<ReadOnlyCategoryNode> root)
+    {
             WriteLine("\n" + root.ToString(n => ToString(n) + $"     ({n.HierarchyCount})"));
         }
 
-        private static void Display(IEnumerable<SimpleMutableCategoryNode> root)
-        {
+    private static void Display(IEnumerable<SimpleMutableCategoryNode> root)
+    {
             WriteLine("\n" + root.ToString(ToString));
         }
 
-        private static string ToString<TNode, TValue>(EntityTreeNode<TNode, long, TValue> n)
-            where TNode : EntityTreeNode<TNode, long, TValue>
-            where TValue : CategoryItem
-        {
+    private static string ToString<TNode, TValue>(EntityTreeNode<TNode, long, TValue> n)
+        where TNode : EntityTreeNode<TNode, long, TValue>
+        where TValue : CategoryItem
+    {
             if (n == null) return "<null>";
 
             var error = n.Error.Normalize();
@@ -52,5 +54,4 @@ namespace TreeCollections.DemoConsole.Demos
             var errorStr = error != IdentityError.None ? $"[** {error} **]" : "";
             return $"{n.Id} {n.Item.Name} [{n.HierarchyId.ToString("/")}] {errorStr}";
         }
-    }
 }

@@ -2,17 +2,20 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
+using TreeCollections.Tree.ItemTree.EntityTree;
+using TreeCollections.Tree.ItemTree.EntityTree.MutableEntityTree;
+using TreeCollections.Tree.Serialization;
 using static System.Diagnostics.Debug;
 
-namespace TreeCollections.DemoConsole.Demos
-{
-    public static class DemoSimpleMutableTree
-    {
-        private const string OutputFolderName = @"c:\TreeCollectionDemos";
-        private const string FileName = "DemoSimpleMutableTree.json";
+namespace TreeCollections.DemoConsole.Demos;
 
-        public static void Start()
-        {
+public static class DemoSimpleMutableTree
+{
+    private const string OutputFolderName = @"c:\TreeCollectionDemos";
+    private const string FileName = "DemoSimpleMutableTree.json";
+
+    public static void Start()
+    {
             var root = new CategoryTreeLookup("Source1").GetSimpleMutableCategoryTree();
 
             var sw = new Stopwatch();
@@ -22,8 +25,8 @@ namespace TreeCollections.DemoConsole.Demos
             Console.WriteLine($"\n*** Post data-loaded elapsed time: {sw.Elapsed} ***");
         }
 
-        private static void Start(SimpleMutableCategoryNode root)
-        {
+    private static void Start(SimpleMutableCategoryNode root)
+    {
             Display(root);
             //DemoToJson(root);
 
@@ -43,8 +46,8 @@ namespace TreeCollections.DemoConsole.Demos
         }
 
 
-        private static void DemoToJson(SimpleMutableCategoryNode root)
-        {
+    private static void DemoToJson(SimpleMutableCategoryNode root)
+    {
             var builder = new TreeJsonBuilder<SimpleMutableCategoryNode>(n => new Dictionary<string, string>
             {
                 {"id", n.Id.ToString() },
@@ -57,14 +60,14 @@ namespace TreeCollections.DemoConsole.Demos
             File.WriteAllText(Path.Combine(OutputFolderName, FileName), json);
         }
 
-        private static void DemoRemoveWithCondition(SimpleMutableCategoryNode root)
-        {
+    private static void DemoRemoveWithCondition(SimpleMutableCategoryNode root)
+    {
             root.DetachWhere(n => n.Error != IdentityError.None);
             Display(root);
         }
 
-        private static void DemoCopy(SimpleMutableCategoryNode root)
-        {
+    private static void DemoCopy(SimpleMutableCategoryNode root)
+    {
             var newRoot = new SimpleMutableCategoryNode(root.Item);
             root.CopyTo(newRoot);
 
@@ -72,8 +75,8 @@ namespace TreeCollections.DemoConsole.Demos
             Display(newRoot);
         }
 
-        private static void DemoMapCopy(SimpleMutableCategoryNode root)
-        {
+    private static void DemoMapCopy(SimpleMutableCategoryNode root)
+    {
             var newRoot = new ReadOnlyCategoryNode(new DualStateCategoryItem(root.Item));
             root.MapCopyTo(newRoot, node => new DualStateCategoryItem(node.Item));
 
@@ -81,8 +84,8 @@ namespace TreeCollections.DemoConsole.Demos
             Display(newRoot);
         }
 
-        private static void DemoCompress(SimpleMutableCategoryNode root)
-        {
+    private static void DemoCompress(SimpleMutableCategoryNode root)
+    {
             var newRoot = new SimpleMutableCategoryNode(root.Item);
             root.CompressTo(newRoot, n => n.Item.Name.StartsWith("m", StringComparison.OrdinalIgnoreCase));
 
@@ -90,8 +93,8 @@ namespace TreeCollections.DemoConsole.Demos
             Display(newRoot);
         }
 
-        private static void DemoMapCompress(SimpleMutableCategoryNode root)
-        {
+    private static void DemoMapCompress(SimpleMutableCategoryNode root)
+    {
             var newRoot = new ReadOnlyCategoryNode(new DualStateCategoryItem(root.Item));
             root.MapCompressTo(newRoot,
                                n => n.Error != IdentityError.None,
@@ -101,8 +104,8 @@ namespace TreeCollections.DemoConsole.Demos
             Display(newRoot);
         }
         
-        private static void DemoCompressSearchDepthLimited(SimpleMutableCategoryNode root)
-        {
+    private static void DemoCompressSearchDepthLimited(SimpleMutableCategoryNode root)
+    {
             var newRoot = new SimpleMutableCategoryNode(root.Item);
             root.CompressTo(newRoot, 
                             n => n.Item.Name.StartsWith("m", StringComparison.OrdinalIgnoreCase), 
@@ -112,8 +115,8 @@ namespace TreeCollections.DemoConsole.Demos
             Display(newRoot);
         }
 
-        private static void DemoMapCompressSearchDepthLimited(SimpleMutableCategoryNode root)
-        {
+    private static void DemoMapCompressSearchDepthLimited(SimpleMutableCategoryNode root)
+    {
             var newRoot = new ReadOnlyCategoryNode(new DualStateCategoryItem(root.Item));
             root.MapCompressTo(newRoot,
                                n => n.Item.Name.StartsWith("c", StringComparison.OrdinalIgnoreCase),
@@ -124,8 +127,8 @@ namespace TreeCollections.DemoConsole.Demos
             Display(newRoot);
         }
 
-        private static void DemoMapCompressRenderDepthLimited(SimpleMutableCategoryNode root)
-        {
+    private static void DemoMapCompressRenderDepthLimited(SimpleMutableCategoryNode root)
+    {
             var newRoot = new ReadOnlyCategoryNode(new DualStateCategoryItem(root.Item));
             root.MapCompressTo(newRoot,
                                n => n.Item.Name.StartsWith("c", StringComparison.OrdinalIgnoreCase),
@@ -137,8 +140,8 @@ namespace TreeCollections.DemoConsole.Demos
         }
 
 
-        private static void DemoBasicOperations(SimpleMutableCategoryNode root)
-        {
+    private static void DemoBasicOperations(SimpleMutableCategoryNode root)
+    {
             root.ForEach(n => n.OrderChildrenDescending(c => c.Name));
             Display(root);
 
@@ -223,8 +226,8 @@ namespace TreeCollections.DemoConsole.Demos
             Display(root);
         }
 
-        private static void DemoDetachAttachOperations(SimpleMutableCategoryNode root)
-        {
+    private static void DemoDetachAttachOperations(SimpleMutableCategoryNode root)
+    {
             //// -- scenario 1 --
             //var scienceSoftware = root[246];
 
@@ -308,20 +311,20 @@ namespace TreeCollections.DemoConsole.Demos
             //Display(cat);
         }
 
-        private static void Display(IEnumerable<SimpleMutableCategoryNode> root)
-        {
+    private static void Display(IEnumerable<SimpleMutableCategoryNode> root)
+    {
             WriteLine("\n" + root.ToString(ToString));
         }
 
-        private static void Display(IEnumerable<ReadOnlyCategoryNode> root)
-        {
+    private static void Display(IEnumerable<ReadOnlyCategoryNode> root)
+    {
             WriteLine("\n" + root.ToString(n => ToString(n) + $"     ({n.HierarchyCount})"));
         }
         
-        private static string ToString<TNode, TValue>(EntityTreeNode<TNode, long, TValue> n)
-            where TNode : EntityTreeNode<TNode, long, TValue>
-            where TValue : CategoryItem
-        {
+    private static string ToString<TNode, TValue>(EntityTreeNode<TNode, long, TValue> n)
+        where TNode : EntityTreeNode<TNode, long, TValue>
+        where TValue : CategoryItem
+    {
             if (n == null) return "<null>";
 
             var error = n.Error.Normalize();
@@ -330,12 +333,11 @@ namespace TreeCollections.DemoConsole.Demos
             return $"{n.Id} {n.Item.Name} [{n.HierarchyId.ToString("/")}] {errorStr}";
         }
 
-        private static void InitializeOutputFolder()
-        {
+    private static void InitializeOutputFolder()
+    {
             if (!Directory.Exists(OutputFolderName))
             {
                 Directory.CreateDirectory(OutputFolderName);
             }
         }
-    }
 }

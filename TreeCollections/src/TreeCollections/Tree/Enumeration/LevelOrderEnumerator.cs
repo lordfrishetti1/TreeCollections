@@ -1,24 +1,24 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 
-namespace TreeCollections
+namespace TreeCollections.Tree.Enumeration;
+
+/// <summary>
+/// Enumerator for level-order (breadth-first) traversal with optional max depth of traversal
+/// </summary>
+/// <typeparam name="TNode"></typeparam>
+public class LevelOrderEnumerator<TNode> : IEnumerator<TNode>
+    where TNode : TreeNode<TNode>
 {
-    /// <summary>
-    /// Enumerator for level-order (breadth-first) traversal with optional max depth of traversal
-    /// </summary>
-    /// <typeparam name="TNode"></typeparam>
-    public class LevelOrderEnumerator<TNode> : IEnumerator<TNode>
-        where TNode : TreeNode<TNode>
-    {
-        private readonly TNode _rootOfIteration;
-        private readonly int _maxDepth;
-        private readonly Queue<TNode> _queue;
-        private int _currentDepth;
-        private int _currentGenerationCount;
-        private int _nextGenerationCount;
+    private readonly TNode _rootOfIteration;
+    private readonly int _maxDepth;
+    private readonly Queue<TNode> _queue;
+    private int _currentDepth;
+    private int _currentGenerationCount;
+    private int _nextGenerationCount;
         
-        internal LevelOrderEnumerator(TNode rootOfIteration, int? maxRelativeDepth = null)
-        {
+    internal LevelOrderEnumerator(TNode rootOfIteration, int? maxRelativeDepth = null)
+    {
             _rootOfIteration = rootOfIteration;
             _currentDepth = 0;
             _queue = new Queue<TNode>();
@@ -29,8 +29,8 @@ namespace TreeCollections
             Current = null;
         }
 
-        public bool MoveNext()
-        {
+    public bool MoveNext()
+    {
             if (Current == null)
             {
                 Current = _rootOfIteration;
@@ -54,8 +54,8 @@ namespace TreeCollections
             return true;
         }
 
-        private void ProcessCurrent()
-        {
+    private void ProcessCurrent()
+    {
             _currentGenerationCount--;
 
             if (_currentDepth >= _maxDepth) return;
@@ -67,23 +67,22 @@ namespace TreeCollections
             }
         }
 
-        private void SwapGeneration()
-        {
+    private void SwapGeneration()
+    {
             _currentDepth++;
             _currentGenerationCount = _nextGenerationCount;
             _nextGenerationCount = 0;
         }
 
-        public TNode Current { get; private set; }
+    public TNode Current { get; private set; }
 
-        object IEnumerator.Current => Current;
+    object IEnumerator.Current => Current;
 
-        public void Dispose()
-        { }
+    public void Dispose()
+    { }
 
-        public void Reset()
-        {
+    public void Reset()
+    {
             Current = null;
         }
-    }
 }

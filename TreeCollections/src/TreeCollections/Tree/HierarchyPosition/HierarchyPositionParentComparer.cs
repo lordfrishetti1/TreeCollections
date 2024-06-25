@@ -1,20 +1,19 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace TreeCollections
-{
-    internal class HierarchyPositionParentComparer : IEqualityComparer<HierarchyPosition>
-    {
-        public static readonly HierarchyPositionParentComparer Default = new HierarchyPositionParentComparer();
+namespace TreeCollections.Tree.HierarchyPosition;
 
-        public bool Equals(HierarchyPosition x, HierarchyPosition y)
-        {
+internal class HierarchyPositionParentComparer : IEqualityComparer<HierarchyPosition>
+{
+    public static readonly HierarchyPositionParentComparer Default = new HierarchyPositionParentComparer();
+
+    public bool Equals(HierarchyPosition x, HierarchyPosition y)
+    {
             return x.Take(x.Level).SequenceEqual(y.Take(y.Level));
         }
 
-        public int GetHashCode(HierarchyPosition obj)
-        {
+    public int GetHashCode(HierarchyPosition obj)
+    {
             return obj.GetHashCode();
         }
-    }
 }

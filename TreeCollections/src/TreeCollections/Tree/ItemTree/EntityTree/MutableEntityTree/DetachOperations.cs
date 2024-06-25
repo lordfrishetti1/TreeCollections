@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
 // ReSharper disable UnusedTypeParameter
 
-namespace TreeCollections
+namespace TreeCollections.Tree.ItemTree.EntityTree.MutableEntityTree;
+
+public abstract partial class MutableEntityTreeNode<TNode, TId, TItem>
 {
-    public abstract partial class MutableEntityTreeNode<TNode, TId, TItem>
+    /// <summary>
+    /// Detach this node from the tree
+    /// </summary>
+    public virtual void Detach()
     {
-        /// <summary>
-        /// Detach this node from the tree
-        /// </summary>
-        public virtual void Detach()
-        {
             if (IsRoot)
             {
                 throw new InvalidOperationException("Cannot detach a root");
@@ -43,14 +44,14 @@ namespace TreeCollections
             OnNodeDetached(oldParent);
         }
 
-        /// <summary>
-        /// Detach nodes from the tree that satisfy the specified predicate.
-        /// Nodes in scope of this operation include this node and all descendants.
-        /// Returns sequence of detached nodes.
-        /// </summary>
-        /// <param name="satisfiesCondition">Filtering predicate</param>
-        public virtual IEnumerable<TNode> DetachWhere(Func<TNode, bool> satisfiesCondition)
-        {
+    /// <summary>
+    /// Detach nodes from the tree that satisfy the specified predicate.
+    /// Nodes in scope of this operation include this node and all descendants.
+    /// Returns sequence of detached nodes.
+    /// </summary>
+    /// <param name="satisfiesCondition">Filtering predicate</param>
+    public virtual IEnumerable<TNode> DetachWhere(Func<TNode, bool> satisfiesCondition)
+    {
             var nodesToRemove = this.Where(satisfiesCondition).OrderBy(n => n.Level).ToList();
 
             while (nodesToRemove.Count > 0)
@@ -67,11 +68,11 @@ namespace TreeCollections
             }
         }
 
-        /// <summary>
-        /// Detach this node's children from the tree. Returns sequence of detached nodes.
-        /// </summary>
-        public virtual IEnumerable<TNode> DetachChildren()
-        {
+    /// <summary>
+    /// Detach this node's children from the tree. Returns sequence of detached nodes.
+    /// </summary>
+    public virtual IEnumerable<TNode> DetachChildren()
+    {
             while (ChildrenList.Count > 0)
             {
                 var child = ChildrenList[0];
@@ -79,5 +80,4 @@ namespace TreeCollections
                 yield return child;
             }
         }
-    }
 }

@@ -1,24 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TreeCollections.InternalUtilities;
 
-namespace TreeCollections
+namespace TreeCollections.Tree.Serialization;
+
+public static class TreeStringSerializationExtensions
 {
-    public static class TreeStringSerializationExtensions
+    /// <summary>
+    /// Convert node sequence to string
+    /// </summary>
+    /// <typeparam name="TNode"></typeparam>
+    /// <param name="seq">Input node sequence</param>
+    /// <param name="toTextLine">Node to string converter</param>
+    /// <param name="indention">Spacing to indent each level of nesting</param>
+    /// <returns></returns>
+    public static string ToString<TNode>(this IEnumerable<TNode> seq, 
+        Func<TNode, string> toTextLine, 
+        int indention = 5) 
+        where TNode : TreeNode<TNode>
     {
-        /// <summary>
-        /// Convert node sequence to string
-        /// </summary>
-        /// <typeparam name="TNode"></typeparam>
-        /// <param name="seq">Input node sequence</param>
-        /// <param name="toTextLine">Node to string converter</param>
-        /// <param name="indention">Spacing to indent each level of nesting</param>
-        /// <returns></returns>
-        public static string ToString<TNode>(this IEnumerable<TNode> seq, 
-                                             Func<TNode, string> toTextLine, 
-                                             int indention = 5) 
-            where TNode : TreeNode<TNode>
-        {
             var builder = new StringBuilder();
             
             seq.ForEach(n =>
@@ -30,19 +31,19 @@ namespace TreeCollections
             return builder.ToString();
         }
 
-        /// <summary>
-        /// Convert node sequence to string
-        /// </summary>
-        /// <typeparam name="TNode"></typeparam>
-        /// <param name="seq">Input node sequence</param>
-        /// <param name="appendLine">Action defining how node gets appended</param>
-        /// <param name="indention">Spacing to indent each level of nesting</param>
-        /// <returns></returns>
-        public static string ToString<TNode>(this IEnumerable<TNode> seq, 
-                                             Action<TNode, string, StringBuilder> appendLine, 
-                                             int indention = 5) 
-            where TNode : TreeNode<TNode>
-        {
+    /// <summary>
+    /// Convert node sequence to string
+    /// </summary>
+    /// <typeparam name="TNode"></typeparam>
+    /// <param name="seq">Input node sequence</param>
+    /// <param name="appendLine">Action defining how node gets appended</param>
+    /// <param name="indention">Spacing to indent each level of nesting</param>
+    /// <returns></returns>
+    public static string ToString<TNode>(this IEnumerable<TNode> seq, 
+        Action<TNode, string, StringBuilder> appendLine, 
+        int indention = 5) 
+        where TNode : TreeNode<TNode>
+    {
             var builder = new StringBuilder();
 
             seq.ForEach(n =>
@@ -53,5 +54,4 @@ namespace TreeCollections
 
             return builder.ToString();
         }
-    }
 }

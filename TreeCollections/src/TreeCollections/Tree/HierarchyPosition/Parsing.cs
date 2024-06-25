@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TreeCollections
+namespace TreeCollections.Tree.HierarchyPosition;
+
+public partial class HierarchyPosition
 {
-    public partial class HierarchyPosition
+    /// <summary>
+    /// Parses a string to a HierarchyPosition
+    /// </summary>
+    /// <param name="source">String to parse</param>
+    /// <param name="separators">Separators between integers in string</param>
+    /// <returns></returns>
+    public static HierarchyPosition TryParse(string source, params string[] separators)
     {
-        /// <summary>
-        /// Parses a string to a HierarchyPosition
-        /// </summary>
-        /// <param name="source">String to parse</param>
-        /// <param name="separators">Separators between integers in string</param>
-        /// <returns></returns>
-        public static HierarchyPosition TryParse(string source, params string[] separators)
-        {
             var parts = source.Split(separators, StringSplitOptions.RemoveEmptyEntries);
             var values = new List<int>();
 
@@ -29,5 +29,4 @@ namespace TreeCollections
 
             return new HierarchyPosition(values);
         }
-    }
 }

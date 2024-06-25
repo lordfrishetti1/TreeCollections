@@ -1,12 +1,13 @@
 ﻿using System;
+
 // ReSharper disable UnusedTypeParameter
 
-namespace TreeCollections
+namespace TreeCollections.Tree.ItemTree.EntityTree.MutableEntityTree;
+
+public abstract partial class MutableEntityTreeNode<TNode, TId, TItem>
 {
-    public abstract partial class MutableEntityTreeNode<TNode, TId, TItem>
+    private void MoveToNonSiblingAdjacentPosition(TNode targetNode, Adjacency adjacency)
     {
-        private void MoveToNonSiblingAdjacentPosition(TNode targetNode, Adjacency adjacency)
-        {
             OnNodeReparenting(targetNode);
 
             var targetIndex = targetNode.OrderIndex + (adjacency == Adjacency.Before ? 0 : 1);
@@ -17,8 +18,8 @@ namespace TreeCollections
             newParent.AttachChildOnMove(This, targetIndex);
         }
 
-        private void MoveToSiblingAdjacentPosition(TNode targetNode, Adjacency adjacency)
-        {
+    private void MoveToSiblingAdjacentPosition(TNode targetNode, Adjacency adjacency)
+    {
             var curIndex = OrderIndex;
             var targetIndex = targetNode.OrderIndex;
 
@@ -35,8 +36,8 @@ namespace TreeCollections
             Parent.OnChildrenReordered();
         }
 
-        private void AttachChildOnAdd(TNode node, int? insertIndex = null)
-        {
+    private void AttachChildOnAdd(TNode node, int? insertIndex = null)
+    {
             InnerAddChild(node, insertIndex);
 
             SetChildrenSiblingReferences();
@@ -45,8 +46,8 @@ namespace TreeCollections
             node.OnNodeAttached();
         }
 
-        private void AttachChildOnMove(TNode node, int? insertIndex = null)
-        {
+    private void AttachChildOnMove(TNode node, int? insertIndex = null)
+    {
             node.Parent = This;
 
             InnerAddChild(node, insertIndex);
@@ -65,8 +66,8 @@ namespace TreeCollections
             node.OnNodeReparented();
         }
 
-        private void InnerAddChild(TNode node, int? insertIndex)
-        {
+    private void InnerAddChild(TNode node, int? insertIndex)
+    {
             if (insertIndex < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(insertIndex));
@@ -82,14 +83,12 @@ namespace TreeCollections
             }
         }
 
-        private bool HasSameIdentityAs(TNode other) => HasEquivalentId(other.Id);
-        private bool HasSameAliasAs(TNode other) => Definition.AliasEqualityComparer.Equals(Item, other.Item);
+    private bool HasSameIdentityAs(TNode other) => HasEquivalentId(other.Id);
+    private bool HasSameAliasAs(TNode other) => Definition.AliasEqualityComparer.Equals(Item, other.Item);
 
-        private bool IsCompatible(TNode externalNode)
-        {
+    private bool IsCompatible(TNode externalNode)
+    {
             return externalNode.Definition.Equals(Definition) &&
                    externalNode.CheckOptions == CheckOptions;
         }
-    }
 }
-

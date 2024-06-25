@@ -1,13 +1,18 @@
 ﻿using System.Collections.Generic;
+using TreeCollections.Tree.ItemTree;
+using TreeCollections.Tree.ItemTree.EntityTree;
+using TreeCollections.Tree.ItemTree.EntityTree.MutableEntityTree.Defaults;
+using TreeCollections.Tree.ItemTree.EntityTree.ReadOnlyEntityTree.Defaults;
+using TreeCollections.Tree.Serialization;
 using static System.Diagnostics.Debug;
 
 
-namespace TreeCollections.DemoConsole.Demos
+namespace TreeCollections.DemoConsole.Demos;
+
+public static class DemoDefaultEntityTrees
 {
-    public static class DemoDefaultEntityTrees
+    public static void Start()
     {
-        public static void Start()
-        {
             var dataRoot = new CategoryTreeLookup("Source2").GetCategoryDataTree();
             
             var mutableRoot = 
@@ -25,24 +30,23 @@ namespace TreeCollections.DemoConsole.Demos
             Display(readOnlyRoot);
         }
 
-        private static void Display(IEnumerable<MutableEntityTreeNode<long, CategoryItem>> root)
-        {
+    private static void Display(IEnumerable<MutableEntityTreeNode<long, CategoryItem>> root)
+    {
             WriteLine("\n" + root.ToString(ToString));
         }
 
-        private static void Display(IEnumerable<ReadOnlyEntityTreeNode<long, CategoryItem>> root)
-        {
+    private static void Display(IEnumerable<ReadOnlyEntityTreeNode<long, CategoryItem>> root)
+    {
             WriteLine("\n" + root.ToString(ToString));
         }
         
-        private static string ToString<TNode, TValue>(EntityTreeNode<TNode, long, TValue> n)
-            where TNode : EntityTreeNode<TNode, long, TValue>
-            where TValue : CategoryItem
-        {
+    private static string ToString<TNode, TValue>(EntityTreeNode<TNode, long, TValue> n)
+        where TNode : EntityTreeNode<TNode, long, TValue>
+        where TValue : CategoryItem
+    {
             var error = n.Error.Normalize();
 
             var errorStr = error != IdentityError.None ? $"[** {error} **]" : "";
             return $"{n.Id} {n.Item.Name} [{n.HierarchyId.ToString("/")}] {errorStr}";
         }
-    }
 }

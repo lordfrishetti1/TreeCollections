@@ -1,29 +1,31 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using TreeCollections.InternalUtilities;
+using TreeCollections.Tree.ItemTree.EntityTree.EntityDefinition;
 
-namespace TreeCollections
+namespace TreeCollections.Tree.ItemTree.EntityTree;
+
+/// <summary>
+/// Abstract tree node that refines ItemTreeNode by allowing the enforcement of uniqueness constraints
+/// based on properties of its payload item (entity).
+/// </summary>
+/// <typeparam name="TNode"></typeparam>
+/// <typeparam name="TId"></typeparam>
+/// <typeparam name="TItem"></typeparam>
+public abstract partial class EntityTreeNode<TNode, TId, TItem> : ItemTreeNode<TNode, TItem>, IEntityTreeNode<TId, TItem> 
+    where TNode: EntityTreeNode<TNode, TId, TItem>
 {
     /// <summary>
-    /// Abstract tree node that refines ItemTreeNode by allowing the enforcement of uniqueness constraints
-    /// based on properties of its payload item (entity).
+    /// Root constructor
     /// </summary>
-    /// <typeparam name="TNode"></typeparam>
-    /// <typeparam name="TId"></typeparam>
-    /// <typeparam name="TItem"></typeparam>
-    public abstract partial class EntityTreeNode<TNode, TId, TItem> : ItemTreeNode<TNode, TItem>, IEntityTreeNode<TId, TItem> 
-        where TNode: EntityTreeNode<TNode, TId, TItem>
+    /// <param name="definition">Entity definition that determines identity parameters</param>
+    /// <param name="checkOptions">Options governing how uniqueness is enforced</param>
+    /// <param name="rootItem">Item contained by root</param>
+    protected EntityTreeNode(IEntityDefinition<TId, TItem> definition,
+        ErrorCheckOptions checkOptions,
+        TItem rootItem)
+        : base(rootItem, null)
     {
-        /// <summary>
-        /// Root constructor
-        /// </summary>
-        /// <param name="definition">Entity definition that determines identity parameters</param>
-        /// <param name="checkOptions">Options governing how uniqueness is enforced</param>
-        /// <param name="rootItem">Item contained by root</param>
-        protected EntityTreeNode(IEntityDefinition<TId, TItem> definition,
-                                 ErrorCheckOptions checkOptions,
-                                 TItem rootItem)
-            : base(rootItem, null)
-        {
             Definition = definition;
             CheckOptions = checkOptions;
 
@@ -33,45 +35,45 @@ namespace TreeCollections
                     : null;
         }
         
-        /// <summary>
-        /// Descendant constructor
-        /// </summary>
-        /// <param name="item"></param>
-        /// <param name="parent"></param>
-        protected EntityTreeNode(TItem item, TNode parent)
-            : base(item, parent)
-        {
+    /// <summary>
+    /// Descendant constructor
+    /// </summary>
+    /// <param name="item"></param>
+    /// <param name="parent"></param>
+    protected EntityTreeNode(TItem item, TNode parent)
+        : base(item, parent)
+    {
             Definition = parent.Definition;
             CheckOptions = parent.CheckOptions;
 
             TreeIdMap = parent.TreeIdMap;
         }
 
-        public IdentityError Error { get; internal set; }
+    public IdentityError Error { get; internal set; }
 
-        public TNode this[TId id] => this.FirstOrDefault(n => n.HasEquivalentId(id));
+    public TNode this[TId id] => this.FirstOrDefault(n => n.HasEquivalentId(id));
         
-        public TId Id => Definition.GetId(Item);
+    public TId Id => Definition.GetId(Item);
 
         
-        // ----- Shared by all nodes in tree -----
-        internal HashSet<TId> TreeIdMap { get; set; }
-        // --------------------------------------------------
+    // ----- Shared by all nodes in tree -----
+    internal HashSet<TId> TreeIdMap { get; set; }
+    // --------------------------------------------------
 
 
-        protected virtual bool ContinueAddOnExistingError() => false;
+    protected virtual bool ContinueAddOnExistingError() => false;
 
-        protected IEntityDefinition<TId, TItem> Definition { get; }
+    protected IEntityDefinition<TId, TItem> Definition { get; }
 
-        protected ErrorCheckOptions CheckOptions { get; }
+    protected ErrorCheckOptions CheckOptions { get; }
 
-        protected sealed override bool OnAddCanProceed()
-        {
+    protected sealed override bool OnAddCanProceed()
+    {
             return Error == IdentityError.None || ContinueAddOnExistingError();
         }
         
-        protected sealed override void SetChildErrorsOnAttachment()
-        {
+    protected sealed override void SetChildErrorsOnAttachment()
+    {
             if (CheckOptions.HasFlag(ErrorCheckOptions.CyclicIdDuplicates))
             {
                 SetChildCyclicIdErrorsOnAttachment();
@@ -116,12 +118,12 @@ namespace TreeCollections
             nodesGroupedById.ForEach(grp => TreeIdMap.Add(grp.Key));
         }
         
-        private protected bool IdentityTrackingIsTreeScope => TreeIdMap != null;
+    private protected bool IdentityTrackingIsTreeScope => TreeIdMap != null;
 
-        private protected bool HasEquivalentId(TId otherId) => Definition.IdEqualityComparer.Equals(Id, otherId);
+    private protected bool HasEquivalentId(TId otherId) => Definition.IdEqualityComparer.Equals(Id, otherId);
 
-        private void SetChildCyclicIdErrorsOnAttachment()
-        {
+    private void SetChildCyclicIdErrorsOnAttachment()
+    {
             var cyclicErrorPairs =
                 from pn in SelectPathUpward()
                 from cn in Children
@@ -135,8 +137,8 @@ namespace TreeCollections
             }
         }
 
-        private void SetChildSiblingAliasErrorsOnAttachment()
-        {
+    private void SetChildSiblingAliasErrorsOnAttachment()
+    {
             var duplicateAliasNodes =
                 Children
                 .ToLookup(c => c.Item, Definition.AliasEqualityComparer)
@@ -145,5 +147,4 @@ namespace TreeCollections
 
             duplicateAliasNodes.ForEach(n => n.Error |= IdentityError.SiblingAliasDuplicate);
         }
-    }
 }

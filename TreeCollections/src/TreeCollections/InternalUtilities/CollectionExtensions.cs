@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace TreeCollections
+namespace TreeCollections.InternalUtilities;
+
+internal static class CollectionExtensions
 {
-    internal static class CollectionExtensions
+    public static void ForEach<T>(this IEnumerable<T> sequence, Action<T> performAction)
     {
-        public static void ForEach<T>(this IEnumerable<T> sequence, Action<T> performAction)
+        foreach (var item in sequence)
         {
-            foreach (var item in sequence)
-            {
-                performAction(item);
-            }
+            performAction(item);
         }
     }
 }

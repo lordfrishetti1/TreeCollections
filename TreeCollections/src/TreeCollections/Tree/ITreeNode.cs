@@ -1,10 +1,9 @@
-﻿namespace TreeCollections
+﻿namespace TreeCollections.Tree;
+
+/// <summary>
+/// Represents a tree node with a unique hierarchy identity
+/// </summary>
+public interface ITreeNode
 {
-    /// <summary>
-    /// Represents a tree node with a unique hierarchy identity
-    /// </summary>
-    public interface ITreeNode
-    {
-        HierarchyPosition HierarchyId { get; }
-    }
+    HierarchyPosition.HierarchyPosition HierarchyId { get; }
 }
